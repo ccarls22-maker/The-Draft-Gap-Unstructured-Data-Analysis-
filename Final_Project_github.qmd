@@ -1,0 +1,391 @@
+---
+title: "README.md"
+format: gfm
+---
+
+
+Beer API: https://www.openbrewerydb.org/
+Poverty API: https://www.census.gov/data/developers/data-sets/Poverty-Statistics.html 
+Colorado Brewers Cup:https://coloradobeer.org/brewers-cup/ 
+Great American Beer Fest: https://www.greatamericanbeerfestival.com/the-competition/winners/ 
+
+Census API key code: 36766f26f14c9e36e82258c605fbd07817ed7767
+
+
+
+
+### County poverty rate Colorado
+
+```{python}
+
+import requests
+import pandas as pd
+
+url = "https://api.census.gov/data/2021/acs/acs5"
+
+params = {
+    'get': 'NAME,B17001_002E,B17001_001E',
+    'for': 'county:*', 
+    'in': 'state:08'  #### REMEMBER TO CHANGE THIS IF YOU WANT TO CHANGE THE STATE!!!
+}
+
+response = requests.get(url, params=params)
+data = response.json()
+
+
+df = pd.DataFrame(data[1:], columns=data[0])
+
+
+df['poverty_rate'] = (df['B17001_002E'].astype(int) / df['B17001_001E'].astype(int)) * 100
+
+print(df)
+
+```
+
+### Poverty Rate by Zipcode
+
+```{python}
+import requests
+import pandas as pd
+
+url = "https://api.census.gov/data/2021/acs/acs5"
+
+params = {
+    'get': 'NAME,B17001_002E,B17001_001E',
+    'for': 'zip code tabulation area:*'
+}
+
+response = requests.get(url, params=params)
+data = response.json()
+
+
+df = pd.DataFrame(data[1:], columns=data[0])
+
+
+df['poverty_rate'] = (df['B17001_002E'].astype(int) / df['B17001_001E'].astype(int)) * 100
+
+
+df['zip_state'] = df['zip code tabulation area'].str[:2]
+
+co_df = df[df['zip_state'].isin(['80', '81'])]
+
+
+
+```
+
+-- Saved results to a CSV
+
+# Brewery API Pull for Colorado
+
+```{python}
+import requests
+import pandas as pd
+
+BASE_URL = "https://api.openbrewerydb.org/v1/breweries"
+all_breweries = []
+
+try:
+    page = 1
+    while True:
+        co = requests.get(BASE_URL, params={"by_state": "Colorado", "per_page": 200, "page": page}) ### Change state here!!!
+        items = co.json()
+        if not items:
+            break
+        all_breweries.extend(items)
+        page += 1
+except requests.RequestException:
+    pass
+
+columns = ["name", "brewery_type", "city", "state", "postal_code", "website_url"]
+
+df = pd.DataFrame(all_breweries)[columns]
+
+df['postal_code'] = df['postal_code'].astype(str).str[:5]
+
+BAPI = df
+
+BAPI
+```
+
+-- Saved results to a CSV
+
+# Colorado Brewers Cup awards
+
+```{python}
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+def cbc():
+    url = "https://coloradobeer.org/brewers-cup/"
+    
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
+    
+    try:
+        response = requests.get(url, headers=headers)
+        response.raise_for_status()
+        
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        beer_data = []
+
+        tables = soup.find_all('table')
+        
+        for table in tables:
+            for row in table.find_all('tr'):
+                cells = row.find_all('td')
+
+                if len(cells) >= 6:
+                    entry = {
+                        'category': cells[0].get_text(strip=True),
+                        'beer_name': cells[2].get_text(strip=True),  
+                        'brewery': cells[3].get_text(strip=True),    
+                        'city': cells[4].get_text(strip=True),       
+                        'subcategory': cells[5].get_text(strip=True) 
+                    }
+                    beer_data.append(entry)
+        
+        return beer_data
+        
+    except Exception as e:
+        return []
+
+data = cbc()
+
+CBC = pd.DataFrame(data)
+#df.to_csv('colorado_beer_awards.csv', index=False)
+
+```
+
+--- Saved Results to a csv
+
+# Get GABF results 
+
+```{python}
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+url = "https://www.greatamericanbeerfestival.com/2025-winners/"
+response = requests.get(url)
+soup = BeautifulSoup(response.content, 'html.parser')
+
+data = []
+for table in soup.find_all('table'):
+    for row in table.find_all('tr'):
+        cells = row.find_all('td')
+        if len(cells) < 4:
+            continue
+            
+        medal_text = cells[0].get_text().lower()
+        if 'gold' in medal_text:
+            medal = 'Gold'
+        elif 'silver' in medal_text:
+            medal = 'Silver'
+        elif 'bronze' in medal_text:
+            medal = 'Bronze'
+        else:
+            continue
+
+        beer_name = cells[1].get_text(strip=True)
+        brewery = cells[2].get_text(strip=True)
+        city = cells[3].get_text(strip=True)
+        
+        state = ""
+        category = ""
+        for i, cell in enumerate(cells):
+            if '_state' in str(cell.get('class', [])):
+                state = cell.get_text(strip=True)
+                if i + 1 < len(cells):
+                    category = cells[i + 1].get_text(strip=True)
+                break
+        
+        data.append({
+            'medal': medal,
+            'beer_name': beer_name,
+            'brewery': brewery, 
+            'city': city,
+            'state': state,
+            'category': category
+        })
+
+GABF = pd.DataFrame(data)
+
+#df.to_csv("gabf_2025_winners_fixed.csv", index=False)
+```
+
+# Join GABF and Colorado Breweries API results
+
+```{python}
+import pandas as pd
+
+#winners = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/gabf_fixed.csv")
+winners = GABF
+
+#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+breweries = BAPI
+
+winners['brewery_clean'] = winners['brewery'].str.lower().str.strip().str.replace(' ', '').str.replace(r'[^\w\s]', '', regex=True)
+
+
+
+winners['brewery_norm'] = winners['brewery'].str.replace(r'(?i)\b(?:company|co\.?)\b', 'Co', regex=True).str.split('-', n=1).str[0].str.strip()
+breweries['name_norm'] = breweries['name'].str.replace(r'(?i)\b(?:company|co\.?)\b', 'Co', regex=True).str.split('-', n=1).str[0].str.strip()
+
+winners['brewery_clean'] = winners['brewery_norm'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
+breweries['name_clean'] = breweries['name_norm'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
+
+winners.drop(columns=['brewery_norm'], inplace=True)
+breweries.drop(columns=['name_norm'], inplace=True)
+
+result = winners.merge(breweries, left_on='brewery_clean', right_on='name_clean', how='left')
+
+
+result = result.drop(['brewery_clean', 'name_clean'], axis=1)
+
+result
+```
+
+
+# Join Colorado Breweries and Colorado Brewers Cup Winners 
+
+
+```{python}
+import pandas as pd
+
+#colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/colorado_beer_awards.csv")
+colorado_awards = CBC
+
+#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+breweries = BAPI
+
+colorado_awards['brewery_clean'] = colorado_awards['brewery'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
+
+breweries['name_clean'] = breweries['name'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
+
+colorado_awards['brewery_norm'] = colorado_awards['brewery'].str.replace(r'(?i)\b(?:company|co\.?)\b', 'Co', regex=True).str.split('-', n=1).str[0].str.strip()
+
+breweries['name_norm'] = breweries['name'].str.replace(r'(?i)\b(?:company|co\.?)\b', 'Co', regex=True).str.split('-', n=1).str[0].str.strip()
+
+colorado_awards['brewery_clean'] = colorado_awards['brewery_norm'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
+
+breweries['name_clean'] = breweries['name_norm'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
+
+colorado_awards.drop(columns=['brewery_norm'], inplace=True)
+breweries.drop(columns=['name_norm'], inplace=True)
+colorado_result = colorado_awards.merge(breweries, left_on='brewery_clean', right_on='name_clean', how='left')
+
+colorado_result = colorado_result.drop(['brewery_clean', 'name_clean'], axis=1)
+
+colorado_result
+```
+
+
+# Join Colorado Breweries x GAMF x Colrado Cup
+
+```{python}
+import pandas as pd
+import re
+
+#colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/cbcxcoloradobrews.csv")
+colorado_awards = CBC
+
+#gabf_winners = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/gabfxcoloradobrews.csv")
+winners = GABF
+gabf_winners = winners
+
+#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+breweries = BAPI
+
+pattern = r'(?i)\b(?:company|co\.?)\b'
+
+def clean_name(name):
+    if pd.isna(name):
+        return ''
+    return re.sub(r'[^\w\s]', '', str(name).lower()).strip().replace(' ', '')
+
+def clean_beer(beer_name):
+    if pd.isna(beer_name):
+        return ''
+    return re.sub(r'[^\w\s]', '', str(beer_name).lower()).strip().replace(' ', '')
+
+breweries['name_clean'] = breweries['name'].apply(clean_name)
+colorado_awards['brewery_clean'] = colorado_awards['brewery'].apply(clean_name)
+gabf_winners['brewery_clean'] = gabf_winners['brewery'].apply(clean_name)
+
+colorado_awards['beer_norm'] = colorado_awards['beer_name'].apply(clean_beer)
+gabf_winners['beer_norm'] = gabf_winners['beer_name'].apply(clean_beer)
+
+colorado_awards['beer_id'] = colorado_awards['brewery_clean'] + '_' + colorado_awards['beer_norm']
+gabf_winners['beer_id'] = gabf_winners['brewery_clean'] + '_' + gabf_winners['beer_norm']
+
+colorado_clean = colorado_awards.copy()
+colorado_clean['colorado_cup_medal'] = 'Colorado Cup Winner'
+colorado_clean = colorado_clean.rename(columns={
+    'category': 'colorado_cup_category', 
+    'beer_name': 'colorado_cup_beer',
+    'subcategory': 'colorado_cup_subcategory'
+})
+
+gabf_clean = gabf_winners.copy()
+gabf_clean = gabf_clean.rename(columns={
+    'medal': 'gabf_medal',
+    'category': 'gabf_category',
+    'beer_name': 'gabf_beer'
+})
+
+master_brewery_list = breweries.copy()
+
+master_brewery_list = pd.merge(
+    master_brewery_list,
+    colorado_clean[['brewery_clean', 'beer_id', 'colorado_cup_medal', 'colorado_cup_category', 'colorado_cup_beer', 'colorado_cup_subcategory']],
+    left_on='name_clean',
+    right_on='brewery_clean',
+    how='left'
+)
+
+gabf_temp = gabf_clean[['beer_id', 'gabf_medal', 'gabf_category', 'gabf_beer']].copy()
+
+master_brewery_list = pd.merge(
+    master_brewery_list,
+    gabf_temp,
+    on='beer_id',
+    how='left'
+)
+
+master_brewery_list = master_brewery_list.drop(columns=['name_clean', 'brewery_clean', 'beer_id']).reset_index(drop=True)
+
+
+master_brewery_list_final = master_brewery_list.drop_duplicates(subset=['name', 'colorado_cup_beer', 'gabf_beer'])
+
+master_brewery_list_final
+```
+
+# Complete Join By Adding Poverty Data 
+
+```{python}
+import pandas as pd
+
+
+#master_breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/coloradobrewsxawards.csv")
+master_breweries = master_brewery_list_final
+
+#poverty_data = pd.read_csv("C:/Users/court/Downloads/poverty.csv")
+poverty_data = co_df
+
+master_breweries['postal_code'] = master_breweries['postal_code'].astype(str)
+poverty_data['zip code tabulation area'] = poverty_data['zip code tabulation area'].astype(str)
+
+Final_Join = master_breweries.merge(
+    poverty_data,
+    left_on='postal_code',
+    right_on='zip code tabulation area',
+    how='left'
+)
+Final_Join = Final_Join.drop(columns=['zip_state', 'B17001_001E', 'B17001_002E', 'NAME'], errors='ignore')
+Final_Join = Final_Join.drop('zip code tabulation area', axis=1)
+Final_Join 
+
+```
