@@ -1,22 +1,17 @@
----
-title: "README.md"
-format: gfm
----
+# Draft Gap
 
 
-Beer API: https://www.openbrewerydb.org/
-Poverty API: https://www.census.gov/data/developers/data-sets/Poverty-Statistics.html 
-Colorado Brewers Cup:https://coloradobeer.org/brewers-cup/ 
-Great American Beer Fest: https://www.greatamericanbeerfestival.com/the-competition/winners/ 
+Beer API: https://www.openbrewerydb.org/ Poverty API:
+https://www.census.gov/data/developers/data-sets/Poverty-Statistics.html
+Colorado Brewers Cup:https://coloradobeer.org/brewers-cup/ Great
+American Beer Fest:
+https://www.greatamericanbeerfestival.com/the-competition/winners/
 
 Census API key code: 36766f26f14c9e36e82258c605fbd07817ed7767
 
-
-
-
 ### County poverty rate Colorado
 
-```{python}
+``` python
 import requests
 import pandas as pd
 url = "https://api.census.gov/data/2021/acs/acs5"
@@ -32,9 +27,37 @@ df['poverty_rate'] = (df['B17001_002E'].astype(int) / df['B17001_001E'].astype(i
 print(df)
 ```
 
+                               NAME B17001_002E B17001_001E state county  \
+    0        Adams County, Colorado       48959      510494    08    001   
+    1      Alamosa County, Colorado        2466       15402    08    003   
+    2     Arapahoe County, Colorado       49673      645068    08    005   
+    3    Archuleta County, Colorado        1283       13155    08    007   
+    4         Baca County, Colorado         702        3432    08    009   
+    ..                          ...         ...         ...   ...    ...   
+    59      Summit County, Colorado        2097       30854    08    117   
+    60      Teller County, Colorado        1851       24508    08    119   
+    61  Washington County, Colorado         520        4560    08    121   
+    62        Weld County, Colorado       30560      315304    08    123   
+    63        Yuma County, Colorado        1396        9628    08    125   
+
+        poverty_rate  
+    0       9.590514  
+    1      16.010908  
+    2       7.700428  
+    3       9.752946  
+    4      20.454545  
+    ..           ...  
+    59      6.796526  
+    60      7.552636  
+    61     11.403509  
+    62      9.692234  
+    63     14.499377  
+
+    [64 rows x 6 columns]
+
 ### Poverty Rate by Zipcode
 
-```{python}
+``` python
 import requests
 import pandas as pd
 url = "https://api.census.gov/data/2021/acs/acs5"
@@ -50,11 +73,11 @@ df['zip_state'] = df['zip code tabulation area'].str[:2]
 co_df = df[df['zip_state'].isin(['80', '81'])]
 ```
 
--- Saved results to a CSV
+– Saved results to a CSV
 
 # Brewery API Pull for Colorado
 
-```{python}
+``` python
 import requests
 import pandas as pd
 BASE_URL = "https://api.openbrewerydb.org/v1/breweries"
@@ -77,11 +100,41 @@ BAPI = df
 BAPI
 ```
 
--- Saved results to a CSV
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | name | brewery_type | city | state | postal_code | website_url |
+|----|----|----|----|----|----|----|
+| 0 | 10 Barrel Brewing Co - Denver | large | Denver | Colorado | 80205 | None |
+| 1 | 105 West Brewing Co | micro | Castle Rock | Colorado | 80109 | http://www.105westbrewing.com |
+| 2 | 12Degree Brewing | brewpub | Louisville | Colorado | 80027 | http://www.12degree.com |
+| 3 | 14er Brewing Company | proprietor | Denver | Colorado | 80205 | http://www.14erBrewing.com |
+| 4 | 3 Freaks Brewing Co | micro | Highlands Ranch | Colorado | 80126 | http://www.3freaksbrewery.com |
+| ... | ... | ... | ... | ... | ... | ... |
+| 443 | Yetters Brewing Company | brewpub | Greeley | Colorado | 80631 | https://yettersbrewingcompany.com/ |
+| 444 | Zephyr Brewing Co | micro | Denver | Colorado | 80216 | http://www.zephyrbrewingco.com |
+| 445 | Zuni Street Brewing Company | micro | Denver | Colorado | 80211 | http://www.zunistreetbrewing.com |
+| 446 | Zwei Brewing Co | micro | Fort Collins | Colorado | 80525 | http://www.zweibruderbrewing.com |
+| 447 | Zymos Brewing | micro | Littleton | Colorado | 80123 | http://zymosbrewing.com |
+
+<p>448 rows × 6 columns</p>
+</div>
+
+– Saved results to a CSV
 
 # Colorado Brewers Cup awards
 
-```{python}
+``` python
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -123,11 +176,11 @@ CBC = pd.DataFrame(data)
 #df.to_csv('colorado_beer_awards.csv', index=False)
 ```
 
---- Saved Results to a csv
+— Saved Results to a csv
 
-# Get GABF results 
+# Get GABF results
 
-```{python}
+``` python
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -177,7 +230,7 @@ GABF = pd.DataFrame(data)
 
 # Join GABF and Colorado Breweries API results
 
-```{python}
+``` python
 import pandas as pd
 #winners = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/gabf_fixed.csv")
 winners = GABF
@@ -195,11 +248,39 @@ result = result.drop(['brewery_clean', 'name_clean'], axis=1)
 result
 ```
 
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 
-# Join Colorado Breweries and Colorado Brewers Cup Winners 
+|  | medal | beer_name | brewery | city_x | state_x | category | name | brewery_type | city_y | state_y | postal_code | website_url |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | Gold | Mr. Oktoberfest | The Mitten Brewing Co. | Grand Rapids | MI | American Amber Lager | NaN | NaN | NaN | NaN | NaN | NaN |
+| 1 | Silver | Oktoberfest | Transmission Brewing Co. | Ventura | CA | American Amber Lager | NaN | NaN | NaN | NaN | NaN | NaN |
+| 2 | Bronze | Full Steam Ahead | 1849 Brewing Co. | Grass Valley | CA | American Amber Lager | NaN | NaN | NaN | NaN | NaN | NaN |
+| 3 | Gold | Ash Cloud | Barrel Mountain Brewing | Battle Ground | WA | American Amber/Red Ale | NaN | NaN | NaN | NaN | NaN | NaN |
+| 4 | Silver | Summon Ifrit | BattleMage Brewing Co. | Vista | CA | American Amber/Red Ale | NaN | NaN | NaN | NaN | NaN | NaN |
+| ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+| 345 | Silver | Perpetual Peace | No Label Brewing Co. | Katy | TX | Wood- and Barrel-Aged Strong Beer | NaN | NaN | NaN | NaN | NaN | NaN |
+| 346 | Bronze | Moroccan Christmas | Wild Blue Yonder Brewing Co. | Castle Rock | CO | Wood- and Barrel-Aged Strong Beer | NaN | NaN | NaN | NaN | NaN | NaN |
+| 347 | Gold | Vladislav | Diebolt Brewing | Denver | CO | Wood- and Barrel-Aged Strong Stout | Diebolt Brewing | micro | Denver | Colorado | 80211 | http://www.dieboltbrewing.com |
+| 348 | Silver | Darkstar November | Bottle Logic Brewing | Anaheim | CA | Wood- and Barrel-Aged Strong Stout | NaN | NaN | NaN | NaN | NaN | NaN |
+| 349 | Bronze | Breakside La Maison du Bang! | Breakside Brewery & Taproom | Milwaukie | OR | Wood- and Barrel-Aged Strong Stout | NaN | NaN | NaN | NaN | NaN | NaN |
 
+<p>350 rows × 12 columns</p>
+</div>
 
-```{python}
+# Join Colorado Breweries and Colorado Brewers Cup Winners
+
+``` python
 import pandas as pd
 #colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/colorado_beer_awards.csv")
 colorado_awards = CBC
@@ -218,10 +299,39 @@ colorado_result = colorado_result.drop(['brewery_clean', 'name_clean'], axis=1)
 colorado_result
 ```
 
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | category | beer_name | brewery | city_x | subcategory | name | brewery_type | city_y | state | postal_code | website_url |
+|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | American & International Pale Lagers | Venga | Cerveceria Colorado | Denver | Australasian, Latin American or Tropical-Style... | NaN | NaN | NaN | NaN | NaN | NaN |
+| 1 | American & International Pale Lagers | Landing Gear Pils | Westbound & Down Brewing Co. | Idaho Springs | International-Style Pilsener | Westbound & Down Brewing Company | brewpub | Idaho Springs | Colorado | 80452 | http://www.westboundanddown.com |
+| 2 | American & International Pale Lagers | Cityscapes | Ratio Beerworks | Denver | International Pale Lager | Ratio Beerworks | micro | Denver | Colorado | 80205 | http://ratiobeerworks.com |
+| 3 | Pale Bitter European Lagers | Classic Pilsner | New Image Brewing Co. | Wheat Ridge | German Pils | New Image Brewing Co | brewpub | Arvada | Colorado | 80002 | http://www.nibrewing.com |
+| 4 | Pale Bitter European Lagers | Dortmunder | Hideaway Park Brewery | Winter Park | German Helles Exportbier | Hideaway Park Brewery | micro | Winter Park | Colorado | 80482 | http://www.hideawayparkbrewery.com |
+| ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+| 78 | Wood & Aged Beers | Black Pearl 4x3 | Locavore Beer Works | Littleton | Wood- and Barrel-Aged Strong Beer | Locavore Beer Works | micro | Littleton | Colorado | 80123 | http://www.locavorebeerworks.com |
+| 79 | Experimental & Specialty Beers | East County Fine Malt Liquor | The Post Brewing Co. | Lafayette | American-Style Malt Liquor | The Post Brewing Co | brewpub | Boulder | Colorado | 80302 | http://www.postbrewing.com |
+| 80 | Experimental & Specialty Beers | East County Fine Malt Liquor | The Post Brewing Co. | Lafayette | American-Style Malt Liquor | The Post Brewing Co | brewpub | Lafayette | Colorado | 80026 | http://www.postbrewing.com |
+| 81 | Experimental & Specialty Beers | Cinnamon Roll Blonde Ale | Bearded Brewer Artisan Ales | Longmont | Experimental Beer | NaN | NaN | NaN | NaN | NaN | NaN |
+| 82 | Experimental & Specialty Beers | Oily Oaf | Wonderland Brewing Co. | Broomfield | Kentucky Common Beer | Wonderland Brewing Co. | micro | Broomfield | Colorado | 80020 | http://www.wonderlandbrewing.com |
+
+<p>83 rows × 11 columns</p>
+</div>
 
 # Join Colorado Breweries x GAMF x Colrado Cup
 
-```{python}
+``` python
 import pandas as pd
 import re
 #colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/cbcxcoloradobrews.csv")
@@ -280,9 +390,39 @@ master_brewery_list_final = master_brewery_list.drop_duplicates(subset=['name', 
 master_brewery_list_final
 ```
 
-# Complete Join By Adding Poverty Data 
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 
-```{python}
+|  | name | brewery_type | city | state | postal_code | website_url | colorado_cup_medal | colorado_cup_category | colorado_cup_beer | colorado_cup_subcategory | gabf_medal | gabf_category | gabf_beer |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | 10 Barrel Brewing Co - Denver | large | Denver | Colorado | 80205 | None | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 1 | 105 West Brewing Co | micro | Castle Rock | Colorado | 80109 | http://www.105westbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 2 | 12Degree Brewing | brewpub | Louisville | Colorado | 80027 | http://www.12degree.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 3 | 14er Brewing Company | proprietor | Denver | Colorado | 80205 | http://www.14erBrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 4 | 3 Freaks Brewing Co | micro | Highlands Ranch | Colorado | 80126 | http://www.3freaksbrewery.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+| 452 | Yetters Brewing Company | brewpub | Greeley | Colorado | 80631 | https://yettersbrewingcompany.com/ | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 453 | Zephyr Brewing Co | micro | Denver | Colorado | 80216 | http://www.zephyrbrewingco.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 454 | Zuni Street Brewing Company | micro | Denver | Colorado | 80211 | http://www.zunistreetbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 455 | Zwei Brewing Co | micro | Fort Collins | Colorado | 80525 | http://www.zweibruderbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+| 456 | Zymos Brewing | micro | Littleton | Colorado | 80123 | http://zymosbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN |
+
+<p>455 rows × 13 columns</p>
+</div>
+
+# Complete Join By Adding Poverty Data
+
+``` python
 import pandas as pd
 #master_breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/coloradobrewsxawards.csv")
 master_breweries = master_brewery_list_final
@@ -300,3 +440,41 @@ Final_Join = Final_Join.drop(columns=['zip_state', 'B17001_001E', 'B17001_002E',
 Final_Join = Final_Join.drop('zip code tabulation area', axis=1)
 Final_Join 
 ```
+
+    C:\Users\court\AppData\Local\Temp\ipykernel_11536\1619414278.py:6: SettingWithCopyWarning:
+
+
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+
+    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | name | brewery_type | city | state | postal_code | website_url | colorado_cup_medal | colorado_cup_category | colorado_cup_beer | colorado_cup_subcategory | gabf_medal | gabf_category | gabf_beer | poverty_rate |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | 10 Barrel Brewing Co - Denver | large | Denver | Colorado | 80205 | None | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 16.865957 |
+| 1 | 105 West Brewing Co | micro | Castle Rock | Colorado | 80109 | http://www.105westbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 2.381577 |
+| 2 | 12Degree Brewing | brewpub | Louisville | Colorado | 80027 | http://www.12degree.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 4.457223 |
+| 3 | 14er Brewing Company | proprietor | Denver | Colorado | 80205 | http://www.14erBrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 16.865957 |
+| 4 | 3 Freaks Brewing Co | micro | Highlands Ranch | Colorado | 80126 | http://www.3freaksbrewery.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 2.037298 |
+| ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+| 450 | Yetters Brewing Company | brewpub | Greeley | Colorado | 80631 | https://yettersbrewingcompany.com/ | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 23.486929 |
+| 451 | Zephyr Brewing Co | micro | Denver | Colorado | 80216 | http://www.zephyrbrewingco.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 18.488724 |
+| 452 | Zuni Street Brewing Company | micro | Denver | Colorado | 80211 | http://www.zunistreetbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 10.581230 |
+| 453 | Zwei Brewing Co | micro | Fort Collins | Colorado | 80525 | http://www.zweibruderbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 8.864950 |
+| 454 | Zymos Brewing | micro | Littleton | Colorado | 80123 | http://zymosbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 4.504465 |
+
+<p>455 rows × 14 columns</p>
+</div>
