@@ -7,7 +7,6 @@ Colorado Brewers Cup:https://coloradobeer.org/brewers-cup/ Great
 American Beer Fest:
 https://www.greatamericanbeerfestival.com/the-competition/winners/
 
-Census API key code: 36766f26f14c9e36e82258c605fbd07817ed7767
 
 ### County poverty rate Colorado
 
