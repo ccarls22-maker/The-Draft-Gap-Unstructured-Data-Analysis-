@@ -480,3 +480,11 @@ Final_Join
 <p>455 rows × 14 columns</p>
 </div>
 
+# Analysis of Brewery Distribution and Socioeconomic Factors
+
+## Quick Stats
+
+### Data Preparation
+```python
+# Drop duplicate brewery names for basic calculations
+Final_Join_unique = Final_Join.drop_duplicates(subset=['name'])
