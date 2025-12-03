@@ -3,14 +3,15 @@ title: "Draft Gap"
 format: gfm
 ---
 
+# Project Overview
+Colorado ranks fourth in the United States for the total number of craft breweries, reflecting a strong local craft beer culture. This project examines how the distribution and what types of breweries intersect with neighborhood economic conditions, and how these factors influence award recognition. By considering both economic and social dimensions, we explore how craft breweries not only reflect but also shape access, opportunity, and community engagement across different regions.
 
+
+# Refrence Links: 
 Beer API: https://www.openbrewerydb.org/
 Poverty API: https://www.census.gov/data/developers/data-sets/Poverty-Statistics.html 
 Colorado Brewers Cup:https://coloradobeer.org/brewers-cup/ 
 Great American Beer Fest: https://www.greatamericanbeerfestival.com/the-competition/winners/ 
-
-
-
 
 
 
@@ -20,6 +21,7 @@ Great American Beer Fest: https://www.greatamericanbeerfestival.com/the-competit
 import requests
 import pandas as pd
 url = "https://api.census.gov/data/2021/acs/acs5"
+
 params = {
     'get': 'NAME,B17001_002E,B17001_001E',
     'for': 'county:*', 
@@ -29,7 +31,8 @@ response = requests.get(url, params=params)
 data = response.json()
 df = pd.DataFrame(data[1:], columns=data[0])
 df['poverty_rate'] = (df['B17001_002E'].astype(int) / df['B17001_001E'].astype(int)) * 100
-print(df)
+
+df
 ```
 
 ### Poverty Rate by Zipcode
@@ -38,6 +41,7 @@ print(df)
 import requests
 import pandas as pd
 url = "https://api.census.gov/data/2021/acs/acs5"
+
 params = {
     'get': 'NAME,B17001_002E,B17001_001E',
     'for': 'zip code tabulation area:*'
@@ -48,6 +52,8 @@ df = pd.DataFrame(data[1:], columns=data[0])
 df['poverty_rate'] = (df['B17001_002E'].astype(int) / df['B17001_001E'].astype(int)) * 100
 df['zip_state'] = df['zip code tabulation area'].str[:2]
 co_df = df[df['zip_state'].isin(['80', '81'])]
+
+co_df
 ```
 
 -- Saved results to a CSV
@@ -120,7 +126,8 @@ def cbc():
         return []
 data = cbc()
 CBC = pd.DataFrame(data)
-#df.to_csv('colorado_beer_awards.csv', index=False)
+
+CBC
 ```
 
 --- Saved Results to a csv
@@ -173,15 +180,17 @@ for table in soup.find_all('table'):
         })
 GABF = pd.DataFrame(data)
 #df.to_csv("gabf_2025_winners_fixed.csv", index=False)
+
+GABF
 ```
 
 # Join GABF and Colorado Breweries API results
 
 ```{python}
 import pandas as pd
-#winners = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/gabf_fixed.csv")
+
 winners = GABF
-#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+
 breweries = BAPI
 winners['brewery_clean'] = winners['brewery'].str.lower().str.strip().str.replace(' ', '').str.replace(r'[^\w\s]', '', regex=True)
 winners['brewery_norm'] = winners['brewery'].str.replace(r'(?i)\b(?:company|co\.?)\b', 'Co', regex=True).str.split('-', n=1).str[0].str.strip()
@@ -192,6 +201,7 @@ winners.drop(columns=['brewery_norm'], inplace=True)
 breweries.drop(columns=['name_norm'], inplace=True)
 result = winners.merge(breweries, left_on='brewery_clean', right_on='name_clean', how='left')
 result = result.drop(['brewery_clean', 'name_clean'], axis=1)
+
 result
 ```
 
@@ -201,9 +211,9 @@ result
 
 ```{python}
 import pandas as pd
-#colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/colorado_beer_awards.csv")
+
 colorado_awards = CBC
-#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+
 breweries = BAPI
 colorado_awards['brewery_clean'] = colorado_awards['brewery'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
 breweries['name_clean'] = breweries['name'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
@@ -224,12 +234,12 @@ colorado_result
 ```{python}
 import pandas as pd
 import re
-#colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/cbcxcoloradobrews.csv")
+
 colorado_awards = CBC
-#gabf_winners = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/gabfxcoloradobrews.csv")
+
 winners = GABF
 gabf_winners = winners
-#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+
 breweries = BAPI
 pattern = r'(?i)\b(?:company|co\.?)\b'
 def clean_name(name):
@@ -284,9 +294,9 @@ master_brewery_list_final
 
 ```{python}
 import pandas as pd
-#master_breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/coloradobrewsxawards.csv")
+
 master_breweries = master_brewery_list_final
-#poverty_data = pd.read_csv("C:/Users/court/Downloads/poverty.csv")
+
 poverty_data = co_df
 master_breweries['postal_code'] = master_breweries['postal_code'].astype(str)
 poverty_data['zip code tabulation area'] = poverty_data['zip code tabulation area'].astype(str)
@@ -300,3 +310,70 @@ Final_Join = Final_Join.drop(columns=['zip_state', 'B17001_001E', 'B17001_002E',
 Final_Join = Final_Join.drop('zip code tabulation area', axis=1)
 Final_Join 
 ```
+
+
+# Quick Stats
+
+```{python}
+#Drop duplicate brewery names for basic calcs
+Final_Join_unique = Final_Join.drop_duplicates(subset=['name'])
+```
+
+```{python}
+Final_Join_unique.describe()
+```
+
+```{python}
+#State Average Poverty Rate
+Avg_poverty = co_df['poverty_rate'].mean()
+Avg_poverty
+```
+
+```{python}
+# Average poverty rate for zipcodes with at least one craft brewery
+zip_means = Final_Join.groupby('postal_code')['poverty_rate'].mean()
+zip_means.mean()
+```
+
+
+```{python}
+# Create Flag for award winners
+Final_Join['medal_flag'] = (
+    (Final_Join['colorado_cup_medal'].notnull())|
+    (Final_Join['gabf_medal'].notnull())
+).astype(int)
+
+# Create Flag for Breweries over of Under State Avg Poverty
+
+Final_Join['Above_Avg_poverty'] = (Final_Join['poverty_rate'] > Avg_poverty).astype(int)
+
+Final_Join
+```
+
+```{python}
+#Break down of brewery types
+Final_Join_unique['brewery_type'].value_counts()
+```
+
+```{python}
+# Distribution of breweries by poverty flag as %
+
+Final_Join_unique.groupby(['Above_Avg_poverty', 'brewery_type']).size()
+pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'])
+pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'],normalize='index')
+
+```
+
+```{python}
+# Distribution of breweries by poverty flag as numeric
+pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'])
+```
+
+```{python}
+# Breweries above or below poverty flag 
+Final_Join_unique['Above_Avg_poverty'].value_counts()
+```
+
+# Observations
+
+Early observations reveal a clear divide in access to craft beer. Experimental microbreweries, which often push the boundaries with innovative brewing techniques, are predominantly located in more affluent areas. In contrast brewpubs which frequently serve as community gathering spaces are more common in regions with higher poverty rates. This suggests that both economic factors and neighborhood demographics may influence the type of breweries present in an area. Now that we have a lead in the data, I turned to Tableau to examine the Draft Gap in depth. The visualizations above provide a clearer view of these patterns.
