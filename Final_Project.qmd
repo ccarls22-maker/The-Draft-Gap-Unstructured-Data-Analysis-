@@ -372,7 +372,7 @@ Final_Join
 
 ```
 
-# Quick Stats
+# Quick Stats 
 
 ```{python}
 #Drop duplicate brewery names for basic calcs
@@ -416,17 +416,11 @@ Final_Join_unique['brewery_type'].value_counts()
 ```
 
 ```{python}
-# Distribution of breweries by poverty flag as %
+# Brewery Type split on Pverty Flag
+Final_Join_unique['Above_Avg_poverty'] = (Final_Join_unique['poverty_rate'] > Avg_poverty).astype(int)
+
 
 Final_Join_unique.groupby(['Above_Avg_poverty', 'brewery_type']).size()
-pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'])
-pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'],normalize='index')
-
-```
-
-```{python}
-# Distribution of breweries by poverty flag as numeric
-pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'])
 ```
 
 ```{python}

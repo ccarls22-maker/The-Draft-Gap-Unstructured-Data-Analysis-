@@ -1,7 +1,17 @@
 # Draft Gap
 
+
 # Project Overview
-Colorado ranks fourth in the United States for the total number of craft breweries, reflecting a strong local craft beer culture. This project examines how the distribution and what types of breweries intersect with neighborhood economic conditions, and how these factors influence award recognition. By considering both economic and social dimensions, we explore how craft breweries not only reflect but also shape access, opportunity, and community engagement across different regions.
+
+Colorado ranks fourth in the United States for the total number of craft
+breweries, reflecting a strong local craft beer culture. This project
+examines how the distribution and what types of breweries intersect with
+neighborhood economic conditions, and how these factors influence award
+recognition. By considering both economic and social dimensions, we
+explore how craft breweries not only reflect but also shape access,
+opportunity, and community engagement across different regions.
+
+# Refrence Links:
 
 Beer API: https://www.openbrewerydb.org/ Poverty API:
 https://www.census.gov/data/developers/data-sets/Poverty-Statistics.html
@@ -9,13 +19,13 @@ Colorado Brewers Cup:https://coloradobeer.org/brewers-cup/ Great
 American Beer Fest:
 https://www.greatamericanbeerfestival.com/the-competition/winners/
 
-
 ### County poverty rate Colorado
 
 ``` python
 import requests
 import pandas as pd
 url = "https://api.census.gov/data/2021/acs/acs5"
+
 params = {
     'get': 'NAME,B17001_002E,B17001_001E',
     'for': 'county:*', 
@@ -25,36 +35,39 @@ response = requests.get(url, params=params)
 data = response.json()
 df = pd.DataFrame(data[1:], columns=data[0])
 df['poverty_rate'] = (df['B17001_002E'].astype(int) / df['B17001_001E'].astype(int)) * 100
-print(df)
+
+df
 ```
 
-                               NAME B17001_002E B17001_001E state county  \
-    0        Adams County, Colorado       48959      510494    08    001   
-    1      Alamosa County, Colorado        2466       15402    08    003   
-    2     Arapahoe County, Colorado       49673      645068    08    005   
-    3    Archuleta County, Colorado        1283       13155    08    007   
-    4         Baca County, Colorado         702        3432    08    009   
-    ..                          ...         ...         ...   ...    ...   
-    59      Summit County, Colorado        2097       30854    08    117   
-    60      Teller County, Colorado        1851       24508    08    119   
-    61  Washington County, Colorado         520        4560    08    121   
-    62        Weld County, Colorado       30560      315304    08    123   
-    63        Yuma County, Colorado        1396        9628    08    125   
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
 
-        poverty_rate  
-    0       9.590514  
-    1      16.010908  
-    2       7.700428  
-    3       9.752946  
-    4      20.454545  
-    ..           ...  
-    59      6.796526  
-    60      7.552636  
-    61     11.403509  
-    62      9.692234  
-    63     14.499377  
+|  | NAME | B17001_002E | B17001_001E | state | county | poverty_rate |
+|----|----|----|----|----|----|----|
+| 0 | Adams County, Colorado | 48959 | 510494 | 08 | 001 | 9.590514 |
+| 1 | Alamosa County, Colorado | 2466 | 15402 | 08 | 003 | 16.010908 |
+| 2 | Arapahoe County, Colorado | 49673 | 645068 | 08 | 005 | 7.700428 |
+| 3 | Archuleta County, Colorado | 1283 | 13155 | 08 | 007 | 9.752946 |
+| 4 | Baca County, Colorado | 702 | 3432 | 08 | 009 | 20.454545 |
+| ... | ... | ... | ... | ... | ... | ... |
+| 59 | Summit County, Colorado | 2097 | 30854 | 08 | 117 | 6.796526 |
+| 60 | Teller County, Colorado | 1851 | 24508 | 08 | 119 | 7.552636 |
+| 61 | Washington County, Colorado | 520 | 4560 | 08 | 121 | 11.403509 |
+| 62 | Weld County, Colorado | 30560 | 315304 | 08 | 123 | 9.692234 |
+| 63 | Yuma County, Colorado | 1396 | 9628 | 08 | 125 | 14.499377 |
 
-    [64 rows x 6 columns]
+<p>64 rows × 6 columns</p>
+</div>
 
 ### Poverty Rate by Zipcode
 
@@ -62,6 +75,7 @@ print(df)
 import requests
 import pandas as pd
 url = "https://api.census.gov/data/2021/acs/acs5"
+
 params = {
     'get': 'NAME,B17001_002E,B17001_001E',
     'for': 'zip code tabulation area:*'
@@ -72,7 +86,39 @@ df = pd.DataFrame(data[1:], columns=data[0])
 df['poverty_rate'] = (df['B17001_002E'].astype(int) / df['B17001_001E'].astype(int)) * 100
 df['zip_state'] = df['zip code tabulation area'].str[:2]
 co_df = df[df['zip_state'].isin(['80', '81'])]
+
+co_df
 ```
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | NAME | B17001_002E | B17001_001E | zip code tabulation area | poverty_rate | zip_state |
+|----|----|----|----|----|----|----|
+| 28345 | ZCTA5 80002 | 2230 | 19709 | 80002 | 11.314628 | 80 |
+| 28346 | ZCTA5 80003 | 3587 | 36676 | 80003 | 9.780238 | 80 |
+| 28347 | ZCTA5 80004 | 2106 | 35174 | 80004 | 5.987377 | 80 |
+| 28348 | ZCTA5 80005 | 900 | 28875 | 80005 | 3.116883 | 80 |
+| 28349 | ZCTA5 80007 | 364 | 17132 | 80007 | 2.124679 | 80 |
+| ... | ... | ... | ... | ... | ... | ... |
+| 28867 | ZCTA5 81653 | 0 | 0 | 81653 | NaN | 81 |
+| 28868 | ZCTA5 81654 | 314 | 1441 | 81654 | 21.790423 | 81 |
+| 28869 | ZCTA5 81655 | 76 | 307 | 81655 | 24.755700 | 81 |
+| 28870 | ZCTA5 81656 | 0 | 299 | 81656 | 0.000000 | 81 |
+| 28871 | ZCTA5 81657 | 302 | 5164 | 81657 | 5.848180 | 81 |
+
+<p>527 rows × 6 columns</p>
+</div>
 
 – Saved results to a CSV
 
@@ -174,8 +220,39 @@ def cbc():
         return []
 data = cbc()
 CBC = pd.DataFrame(data)
-#df.to_csv('colorado_beer_awards.csv', index=False)
+
+CBC
 ```
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | category | beer_name | brewery | city | subcategory |
+|----|----|----|----|----|----|
+| 0 | American & International Pale Lagers | Venga | Cerveceria Colorado | Denver | Australasian, Latin American or Tropical-Style... |
+| 1 | American & International Pale Lagers | Landing Gear Pils | Westbound & Down Brewing Co. | Idaho Springs | International-Style Pilsener |
+| 2 | American & International Pale Lagers | Cityscapes | Ratio Beerworks | Denver | International Pale Lager |
+| 3 | Pale Bitter European Lagers | Classic Pilsner | New Image Brewing Co. | Wheat Ridge | German Pils |
+| 4 | Pale Bitter European Lagers | Dortmunder | Hideaway Park Brewery | Winter Park | German Helles Exportbier |
+| ... | ... | ... | ... | ... | ... |
+| 73 | Wood & Aged Beers | Here Be Monsters | Cerebral Brewing - Aurora Arts | Aurora | Wood- and Barrel-Aged Strong Stout |
+| 74 | Wood & Aged Beers | Black Pearl 4x3 | Locavore Beer Works | Littleton | Wood- and Barrel-Aged Strong Beer |
+| 75 | Experimental & Specialty Beers | East County Fine Malt Liquor | The Post Brewing Co. | Lafayette | American-Style Malt Liquor |
+| 76 | Experimental & Specialty Beers | Cinnamon Roll Blonde Ale | Bearded Brewer Artisan Ales | Longmont | Experimental Beer |
+| 77 | Experimental & Specialty Beers | Oily Oaf | Wonderland Brewing Co. | Broomfield | Kentucky Common Beer |
+
+<p>78 rows × 5 columns</p>
+</div>
 
 — Saved Results to a csv
 
@@ -227,15 +304,47 @@ for table in soup.find_all('table'):
         })
 GABF = pd.DataFrame(data)
 #df.to_csv("gabf_2025_winners_fixed.csv", index=False)
+
+GABF
 ```
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | medal | beer_name | brewery | city | state | category |
+|----|----|----|----|----|----|----|
+| 0 | Gold | Mr. Oktoberfest | The Mitten Brewing Co. | Grand Rapids | MI | American Amber Lager |
+| 1 | Silver | Oktoberfest | Transmission Brewing Co. | Ventura | CA | American Amber Lager |
+| 2 | Bronze | Full Steam Ahead | 1849 Brewing Co. | Grass Valley | CA | American Amber Lager |
+| 3 | Gold | Ash Cloud | Barrel Mountain Brewing | Battle Ground | WA | American Amber/Red Ale |
+| 4 | Silver | Summon Ifrit | BattleMage Brewing Co. | Vista | CA | American Amber/Red Ale |
+| ... | ... | ... | ... | ... | ... | ... |
+| 342 | Silver | Perpetual Peace | No Label Brewing Co. | Katy | TX | Wood- and Barrel-Aged Strong Beer |
+| 343 | Bronze | Moroccan Christmas | Wild Blue Yonder Brewing Co. | Castle Rock | CO | Wood- and Barrel-Aged Strong Beer |
+| 344 | Gold | Vladislav | Diebolt Brewing | Denver | CO | Wood- and Barrel-Aged Strong Stout |
+| 345 | Silver | Darkstar November | Bottle Logic Brewing | Anaheim | CA | Wood- and Barrel-Aged Strong Stout |
+| 346 | Bronze | Breakside La Maison du Bang! | Breakside Brewery & Taproom | Milwaukie | OR | Wood- and Barrel-Aged Strong Stout |
+
+<p>347 rows × 6 columns</p>
+</div>
 
 # Join GABF and Colorado Breweries API results
 
 ``` python
 import pandas as pd
-#winners = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/gabf_fixed.csv")
+
 winners = GABF
-#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+
 breweries = BAPI
 winners['brewery_clean'] = winners['brewery'].str.lower().str.strip().str.replace(' ', '').str.replace(r'[^\w\s]', '', regex=True)
 winners['brewery_norm'] = winners['brewery'].str.replace(r'(?i)\b(?:company|co\.?)\b', 'Co', regex=True).str.split('-', n=1).str[0].str.strip()
@@ -246,6 +355,7 @@ winners.drop(columns=['brewery_norm'], inplace=True)
 breweries.drop(columns=['name_norm'], inplace=True)
 result = winners.merge(breweries, left_on='brewery_clean', right_on='name_clean', how='left')
 result = result.drop(['brewery_clean', 'name_clean'], axis=1)
+
 result
 ```
 
@@ -283,9 +393,9 @@ result
 
 ``` python
 import pandas as pd
-#colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/colorado_beer_awards.csv")
+
 colorado_awards = CBC
-#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+
 breweries = BAPI
 colorado_awards['brewery_clean'] = colorado_awards['brewery'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
 breweries['name_clean'] = breweries['name'].str.lower().str.strip().str.replace(r'[^\w\s]', '', regex=True).str.replace(' ', '')
@@ -335,12 +445,12 @@ colorado_result
 ``` python
 import pandas as pd
 import re
-#colorado_awards = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/cbcxcoloradobrews.csv")
+
 colorado_awards = CBC
-#gabf_winners = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/gabfxcoloradobrews.csv")
+
 winners = GABF
 gabf_winners = winners
-#breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/Data_Dump/breweries_co_or_zip08.csv")
+
 breweries = BAPI
 pattern = r'(?i)\b(?:company|co\.?)\b'
 def clean_name(name):
@@ -425,9 +535,9 @@ master_brewery_list_final
 
 ``` python
 import pandas as pd
-#master_breweries = pd.read_csv("C:/Users/court/Downloads/Unstructered_final_project/coloradobrewsxawards.csv")
+
 master_breweries = master_brewery_list_final
-#poverty_data = pd.read_csv("C:/Users/court/Downloads/poverty.csv")
+
 poverty_data = co_df
 master_breweries['postal_code'] = master_breweries['postal_code'].astype(str)
 poverty_data['zip code tabulation area'] = poverty_data['zip code tabulation area'].astype(str)
@@ -442,7 +552,7 @@ Final_Join = Final_Join.drop('zip code tabulation area', axis=1)
 Final_Join 
 ```
 
-    C:\Users\court\AppData\Local\Temp\ipykernel_11536\1619414278.py:6: SettingWithCopyWarning:
+    C:\Users\court\AppData\Local\Temp\ipykernel_42724\2793759248.py:6: SettingWithCopyWarning:
 
 
     A value is trying to be set on a copy of a slice from a DataFrame.
@@ -480,3 +590,172 @@ Final_Join
 <p>455 rows × 14 columns</p>
 </div>
 
+# Quick Stats
+
+``` python
+#Drop duplicate brewery names for basic calcs
+Final_Join_unique = Final_Join.drop_duplicates(subset=['name'])
+```
+
+``` python
+Final_Join_unique.describe()
+```
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|       | poverty_rate |
+|-------|--------------|
+| count | 443.000000   |
+| mean  | 10.656961    |
+| std   | 6.163887     |
+| min   | 1.889559     |
+| 25%   | 5.523160     |
+| 50%   | 9.516031     |
+| 75%   | 13.704166    |
+| max   | 32.217558    |
+
+</div>
+
+``` python
+#State Average Poverty Rate
+Avg_poverty = co_df['poverty_rate'].mean()
+Avg_poverty
+```
+
+    np.float64(10.988587014808395)
+
+``` python
+# Average poverty rate for zipcodes with at least one craft brewery
+zip_means = Final_Join.groupby('postal_code')['poverty_rate'].mean()
+zip_means.mean()
+```
+
+    np.float64(9.77252825788744)
+
+``` python
+# Create Flag for award winners
+Final_Join['medal_flag'] = (
+    (Final_Join['colorado_cup_medal'].notnull())|
+    (Final_Join['gabf_medal'].notnull())
+).astype(int)
+
+# Create Flag for Breweries over of Under State Avg Poverty
+
+Final_Join['Above_Avg_poverty'] = (Final_Join['poverty_rate'] > Avg_poverty).astype(int)
+
+Final_Join
+```
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+&#10;    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+&#10;    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+|  | name | brewery_type | city | state | postal_code | website_url | colorado_cup_medal | colorado_cup_category | colorado_cup_beer | colorado_cup_subcategory | gabf_medal | gabf_category | gabf_beer | poverty_rate | medal_flag | Above_Avg_poverty |
+|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
+| 0 | 10 Barrel Brewing Co - Denver | large | Denver | Colorado | 80205 | None | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 16.865957 | 0 | 1 |
+| 1 | 105 West Brewing Co | micro | Castle Rock | Colorado | 80109 | http://www.105westbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 2.381577 | 0 | 0 |
+| 2 | 12Degree Brewing | brewpub | Louisville | Colorado | 80027 | http://www.12degree.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 4.457223 | 0 | 0 |
+| 3 | 14er Brewing Company | proprietor | Denver | Colorado | 80205 | http://www.14erBrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 16.865957 | 0 | 1 |
+| 4 | 3 Freaks Brewing Co | micro | Highlands Ranch | Colorado | 80126 | http://www.3freaksbrewery.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 2.037298 | 0 | 0 |
+| ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
+| 450 | Yetters Brewing Company | brewpub | Greeley | Colorado | 80631 | https://yettersbrewingcompany.com/ | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 23.486929 | 0 | 1 |
+| 451 | Zephyr Brewing Co | micro | Denver | Colorado | 80216 | http://www.zephyrbrewingco.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 18.488724 | 0 | 1 |
+| 452 | Zuni Street Brewing Company | micro | Denver | Colorado | 80211 | http://www.zunistreetbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 10.581230 | 0 | 0 |
+| 453 | Zwei Brewing Co | micro | Fort Collins | Colorado | 80525 | http://www.zweibruderbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 8.864950 | 0 | 0 |
+| 454 | Zymos Brewing | micro | Littleton | Colorado | 80123 | http://zymosbrewing.com | NaN | NaN | NaN | NaN | NaN | NaN | NaN | 4.504465 | 0 | 0 |
+
+<p>455 rows × 16 columns</p>
+</div>
+
+``` python
+#Break down of brewery types
+Final_Join_unique['brewery_type'].value_counts()
+```
+
+    brewery_type
+    micro         227
+    brewpub       140
+    planning       39
+    regional       11
+    contract        9
+    closed          9
+    large           7
+    proprietor      4
+    Name: count, dtype: int64
+
+``` python
+# Brewery Type split on Pverty Flag
+Final_Join_unique['Above_Avg_poverty'] = (Final_Join_unique['poverty_rate'] > Avg_poverty).astype(int)
+
+
+Final_Join_unique.groupby(['Above_Avg_poverty', 'brewery_type']).size()
+```
+
+    C:\Users\court\AppData\Local\Temp\ipykernel_42724\4261389395.py:2: SettingWithCopyWarning:
+
+
+    A value is trying to be set on a copy of a slice from a DataFrame.
+    Try using .loc[row_indexer,col_indexer] = value instead
+
+    See the caveats in the documentation: https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+
+    Above_Avg_poverty  brewery_type
+    0                  brewpub          80
+                       closed            9
+                       contract          8
+                       large             3
+                       micro           143
+                       planning         24
+                       proprietor        3
+                       regional          4
+    1                  brewpub          60
+                       contract          1
+                       large             4
+                       micro            84
+                       planning         15
+                       proprietor        1
+                       regional          7
+    dtype: int64
+
+``` python
+# Breweries above or below poverty flag 
+Final_Join_unique['Above_Avg_poverty'].value_counts()
+```
+
+    Above_Avg_poverty
+    0    274
+    1    172
+    Name: count, dtype: int64
+
+# Next Steps
+
+Early observations reveal a clear divide in access to craft beer.
+Experimental microbreweries, which often push the boundaries with
+innovative brewing techniques, are predominantly located in more
+affluent areas. In contrast brewpubs which frequently serve as community
+gathering spaces are more common in regions with higher poverty rates.
+This suggests that both economic factors and neighborhood demographics
+may influence the type of breweries present in an area. Now that we have
+a lead in the data, I turned to Tableau to examine the Draft Gap in
+depth. The visualizations above provide a clearer view of these
+patterns.
