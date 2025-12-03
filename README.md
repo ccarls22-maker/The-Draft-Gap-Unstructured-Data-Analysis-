@@ -1,5 +1,7 @@
 # Draft Gap
 
+# Project Overview
+Colorado ranks fourth in the United States for the total number of craft breweries, reflecting a strong local craft beer culture. This project examines how the distribution and what types of breweries intersect with neighborhood economic conditions, and how these factors influence award recognition. By considering both economic and social dimensions, we explore how craft breweries not only reflect but also shape access, opportunity, and community engagement across different regions.
 
 Beer API: https://www.openbrewerydb.org/ Poverty API:
 https://www.census.gov/data/developers/data-sets/Poverty-Statistics.html
@@ -477,3 +479,69 @@ Final_Join
 
 <p>455 rows × 14 columns</p>
 </div>
+
+# Quick Stats
+
+```{python}
+#Drop duplicate brewery names for basic calcs
+Final_Join_unique = Final_Join.drop_duplicates(subset=['name'])
+```
+
+```{python}
+Final_Join_unique.describe()
+```
+
+```{python}
+#State Average Poverty Rate
+Avg_poverty = co_df['poverty_rate'].mean()
+Avg_poverty
+```
+
+```{python}
+# Average poverty rate for zipcodes with at least one craft brewery
+zip_means = Final_Join.groupby('postal_code')['poverty_rate'].mean()
+zip_means.mean()
+```
+
+
+```{python}
+# Create Flag for award winners
+Final_Join['medal_flag'] = (
+    (Final_Join['colorado_cup_medal'].notnull())|
+    (Final_Join['gabf_medal'].notnull())
+).astype(int)
+
+# Create Flag for Breweries over of Under State Avg Poverty
+
+Final_Join['Above_Avg_poverty'] = (Final_Join['poverty_rate'] > Avg_poverty).astype(int)
+
+Final_Join
+```
+
+```{python}
+#Break down of brewery types
+Final_Join_unique['brewery_type'].value_counts()
+```
+
+```{python}
+# Distribution of breweries by poverty flag as %
+
+Final_Join_unique.groupby(['Above_Avg_poverty', 'brewery_type']).size()
+pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'])
+pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'],normalize='index')
+
+```
+
+```{python}
+# Distribution of breweries by poverty flag as numeric
+pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_poverty'])
+```
+
+```{python}
+# Breweries above or below poverty flag 
+Final_Join_unique['Above_Avg_poverty'].value_counts()
+```
+
+# Observations
+
+Early observations reveal a clear divide in access to craft beer. Experimental microbreweries, which often push the boundaries with innovative brewing techniques, are predominantly located in more affluent areas. In contrast brewpubs which frequently serve as community gathering spaces are more common in regions with higher poverty rates. This suggests that both economic factors and neighborhood demographics may influence the type of breweries present in an area. Now that we have a lead in the data, I turned to Tableau to examine the Draft Gap in depth. The visualizations above provide a clearer view of these patterns.
