@@ -312,7 +312,7 @@ Final_Join
 ```
 
 
-# Quick Stats
+# Quick Stats 
 
 ```{python}
 #Drop duplicate brewery names for basic calcs
@@ -374,6 +374,6 @@ pd.crosstab(Final_Join_unique['brewery_type'], Final_Join_unique['Above_Avg_pove
 Final_Join_unique['Above_Avg_poverty'].value_counts()
 ```
 
-# Observations
+# Next Steps
 
 Early observations reveal a clear divide in access to craft beer. Experimental microbreweries, which often push the boundaries with innovative brewing techniques, are predominantly located in more affluent areas. In contrast brewpubs which frequently serve as community gathering spaces are more common in regions with higher poverty rates. This suggests that both economic factors and neighborhood demographics may influence the type of breweries present in an area. Now that we have a lead in the data, I turned to Tableau to examine the Draft Gap in depth. The visualizations above provide a clearer view of these patterns.
