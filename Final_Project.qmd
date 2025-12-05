@@ -431,3 +431,18 @@ Final_Join_unique['Above_Avg_poverty'].value_counts()
 # Next Steps
 
 Early observations reveal a clear divide in access to craft beer. Experimental microbreweries, which often push the boundaries with innovative brewing techniques, are predominantly located in more affluent areas. In contrast brewpubs which frequently serve as community gathering spaces are more common in regions with higher poverty rates. This suggests that both economic factors and neighborhood demographics may influence the type of breweries present in an area. Now that we have a lead in the data, I turned to Tableau to examine the Draft Gap in depth. The visualizations above provide a clearer view of these patterns.
+
+# Conclsuion 
+
+The Draft Gap, examines how Colorado’s economic divide shapes one of its signature industries: craft beer. A comparison of ZIP codes above and below the state’s average poverty rate highlights distinct economic sectors. And when the focus narrows to ZIP codes with at least one brewery, disparities become even more visible, only 172/448 breweries operate in areas with a below-average poverty rate. 
+
+Two themes emerge from this pattern: the dual engines of the industry and the inequity of recognition. Colorado’s brewery landscape is dominated by two types of producers, microbreweries and brewpubs, each serving a different role. Surprisingly, only 37% of microbreweries are located in higher-poverty regions, despite having lower start-up costs than brewpubs. Brewpubs, which combine brewing with a restaurant component, show a slightly stronger presence in these communities at 42%.
+ 
+Brewpubs often function as local gathering spaces, reinforcing social cohesion in economically insecure areas, while microbreweries tend to specialize in experimental products that advance brewing techniques and draw industry attention. 
+
+Recognition in the industry is driven largely by two key awards (1) the Colorado Brewers Cup and (2) the highly sought-after Great American Beer Festival medals. Because microbreweries cluster in more affluent ZIP codes, breweries in those areas receive a disproportionate share of awards. As a result, many brewpubs (despite producing high-quality beer) are held back by limited funding, reduced visibility, and fewer resources to compete for those recognitions. 
+
+This imbalance matters in a state where the average brewery lifespan is estimated at 6.5 years and the national industry is contracting. Although earlier research suggested award outcomes did not strongly affect long-term survival, it also found brewpubs exited the market more frequently, hinting at deeper socio-economic dynamics. When these dynamics are viewed together (brewery type, neighborhood conditions, and award distribution) a pattern emerges in which breweries in less affluent areas struggle to gain recognition and market footholds. In an increasingly crowded industry, such recognition may be more critical than ever for survival and community impact. 
+
+While Colorado represents only one case within a broader industry, the patterns here highlight how supporting access, visibility, and long-term stability for breweries across all communities can reinforce the strength of the craft beer sector and the connections people build around it.
+
